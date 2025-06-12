@@ -3,7 +3,18 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function EditForm({ annonce }: { annonce: any }) {
+type AnnonceProps = {
+  id: number;
+  title: string;
+  description: string;
+  ville: string;
+  price: number;
+  type: string;
+  rooms: number;
+  surface: number;
+};
+
+export default function EditForm({ annonce }: { annonce: AnnonceProps }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -12,10 +23,10 @@ export default function EditForm({ annonce }: { annonce: any }) {
     title: annonce.title,
     description: annonce.description,
     ville: annonce.ville,
-    price: annonce.price,
+    price: annonce.price.toString(),
     type: annonce.type,
-    rooms: annonce.rooms,
-    surface: annonce.surface,
+    rooms: annonce.rooms.toString(),
+    surface: annonce.surface.toString(),
   });
 
   const handleChange = (
@@ -46,8 +57,9 @@ export default function EditForm({ annonce }: { annonce: any }) {
 
       if (!res.ok) throw new Error(data || 'Erreur lors de la mise à jour');
       router.push('/annonces');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Une erreur est survenue';
+      setError(message);
       console.error('Erreur:', err);
     }
   };
@@ -59,7 +71,10 @@ export default function EditForm({ annonce }: { annonce: any }) {
           Modifier l'annonce
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-6 border border-[#ccc] rounded-xl p-6 shadow-md bg-transparent">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6 border border-[#ccc] rounded-xl p-6 shadow-md bg-transparent"
+        >
           {/* Titre */}
           <div>
             <label className="block text-sm font-medium text-[#1E1E1E] mb-1">Titre</label>

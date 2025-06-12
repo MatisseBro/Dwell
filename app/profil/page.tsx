@@ -4,9 +4,10 @@ import { UserCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getSession } from 'next-auth/react';
 import Link from 'next/link';
+import type { UserData } from '@/types/user';
 
 export default function ProfilPage() {
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -14,7 +15,7 @@ export default function ProfilPage() {
       if (!session?.user?.email) return;
 
       const res = await fetch(`/api/user?email=${session.user.email}`);
-      const data = await res.json();
+      const data: UserData = await res.json();
       setUserData(data);
     };
 
@@ -55,7 +56,7 @@ export default function ProfilPage() {
             <p><strong>Nom :</strong> {userData.nom}</p>
             <p><strong>Prénom :</strong> {userData.prenom}</p>
             <p><strong>Email :</strong> {userData.email}</p>
-            <p><strong>Téléphone :</strong> {userData.telephone}</p>
+            <p><strong>Téléphone :</strong> {userData.telephone || 'Non renseigné'}</p>
             <p><strong>Rôle :</strong> {userData.role}</p>
             <p><strong>Inscription :</strong> {new Date(userData.createdAt).toLocaleDateString()}</p>
           </div>
@@ -70,9 +71,10 @@ export default function ProfilPage() {
           {isProprietaire && (!userData.annonces || userData.annonces.length === 0) && (
             <p className="text-[#1E1E1E]">Aucune annonce publiée.</p>
           )}
+
           {isProprietaire && userData.annonces?.length > 0 && (
             <ul className="space-y-6">
-              {userData.annonces.map((annonce: any) => (
+              {userData.annonces.map((annonce) => (
                 <Link key={annonce.id} href={`/annonces/${annonce.id}`}>
                   <li className="border border-[#1E1E1E] rounded-md p-4 cursor-pointer text-[#1E1E1E] transition hover:border-black">
                     <p className="font-medium">{annonce.title}</p>
@@ -88,9 +90,10 @@ export default function ProfilPage() {
           {!isProprietaire && (!userData.likes || userData.likes.length === 0) && (
             <p className="text-[#1E1E1E]">Aucune annonce likée.</p>
           )}
+
           {!isProprietaire && userData.likes?.length > 0 && (
             <ul className="flex flex-col gap-6">
-              {userData.likes.map((like: any) => (
+              {userData.likes.map((like) => (
                 <Link key={like.annonce.id} href={`/annonces/${like.annonce.id}`}>
                   <li className="border border-[#1E1E1E] rounded-md p-4 cursor-pointer text-[#1E1E1E] transition hover:border-black">
                     <p className="font-medium">{like.annonce.title}</p>

@@ -6,9 +6,9 @@ import Image from 'next/image';
 import { Home, ArrowRight, Plus } from 'lucide-react';
 import LikeButton from '@/components/LikeButton';
 import { Button } from '@/components/ui/button';
+import type { Prisma } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
-
 const PAGE_SIZE = 9;
 
 export default async function AnnoncesPage({
@@ -26,7 +26,7 @@ export default async function AnnoncesPage({
   const session = await getServerSession(authOptions);
   const isLocataire = session?.user?.role === 'LOCATAIRE';
 
-  const filters: any = {};
+  const filters: Prisma.AnnonceWhereInput = {};
 
   if (searchParams?.ville) {
     filters.ville = {
@@ -39,20 +39,19 @@ export default async function AnnoncesPage({
   }
 
   if (searchParams?.rooms && searchParams.rooms !== 'all') {
-    if (searchParams.rooms === '4') {
-      filters.rooms = { gte: 4 };
-    } else {
-      filters.rooms = Number(searchParams.rooms);
-    }
+    filters.rooms =
+      searchParams.rooms === '4'
+        ? { gte: 4 }
+        : parseInt(searchParams.rooms);
   }
 
   if (searchParams?.minPrice || searchParams?.maxPrice) {
     filters.price = {};
     if (searchParams.minPrice) {
-      filters.price.gte = Number(searchParams.minPrice);
+      filters.price.gte = parseFloat(searchParams.minPrice);
     }
     if (searchParams.maxPrice) {
-      filters.price.lte = Number(searchParams.maxPrice);
+      filters.price.lte = parseFloat(searchParams.maxPrice);
     }
   }
 
@@ -170,7 +169,6 @@ export default async function AnnoncesPage({
         })}
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-8 gap-2">
           {Array.from({ length: totalPages }).map((_, index) => {
