@@ -7,7 +7,20 @@ import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PropertyCard } from '@/components/property-card';
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  const data = await res.json();
+
+  // Debug : afficher dans la console ce qui est renvoyé
+  console.log('Données reçues depuis /api/annonces/last :', data);
+
+  // Si la réponse est un objet { annonces: [...] }, retourne data.annonces
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.annonces)) return data.annonces;
+
+  // Sinon, retourne tableau vide pour éviter le crash
+  return [];
+};
 
 export default function DernieresAnnoncesSectionClient() {
   const { data: annonces, error, isLoading } = useSWR<Annonce[]>('/api/annonces/last', fetcher);
@@ -20,7 +33,7 @@ export default function DernieresAnnoncesSectionClient() {
     return <p className="text-red-500 text-center">Erreur de chargement des annonces.</p>;
   }
 
-  if (!annonces || annonces.length === 0) {
+  if (!Array.isArray(annonces) || annonces.length === 0) {
     return <p className="text-center text-muted">Aucune annonce disponible.</p>;
   }
 

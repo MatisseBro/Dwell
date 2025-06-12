@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 
 export const dynamic = 'force-dynamic';
 
+const PAGE_SIZE = 9;
+
 export default async function AnnoncesPage({
   searchParams,
 }: {
@@ -18,6 +20,7 @@ export default async function AnnoncesPage({
     rooms?: string;
     minPrice?: string;
     maxPrice?: string;
+    page?: string;
   };
 }) {
   const session = await getServerSession(authOptions);
@@ -53,23 +56,30 @@ export default async function AnnoncesPage({
     }
   }
 
-  const annonces = await prisma.annonce.findMany({
-    where: filters,
-    orderBy: { createdAt: 'desc' },
-    include: {
-      likedBy: true,
-    },
-  });
+  const page = parseInt(searchParams?.page || '1', 10);
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [annonces, total] = await Promise.all([
+    prisma.annonce.findMany({
+      where: filters,
+      orderBy: { createdAt: 'desc' },
+      include: { likedBy: true },
+      skip,
+      take: PAGE_SIZE,
+    }),
+    prisma.annonce.count({ where: filters }),
+  ]);
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
     <div className="container mx-auto p-6" style={{ backgroundColor: '#F7E5E1' }}>
-      {/* Titre + formulaire de recherche */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div className="flex flex-col md:flex-row md:items-center gap-4 w-full">
           <div className="flex items-center gap-2 text-gray-700">
             <Home className="w-6 h-6 text-primary" />
             <span className="uppercase tracking-wide text-lg font-semibold">
-              {annonces.length} annonces correspondant à votre recherche.
+              {total} annonces correspondant à votre recherche.
             </span>
           </div>
 
@@ -99,7 +109,6 @@ export default async function AnnoncesPage({
         </div>
       )}
 
-      {/* Cartes annonces */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {annonces.map((ann) => {
           const alreadyLiked = session?.user?.id
@@ -160,6 +169,27 @@ export default async function AnnoncesPage({
           );
         })}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-8 gap-2">
+          {Array.from({ length: totalPages }).map((_, index) => {
+            const currentPage = index + 1;
+            const url = new URLSearchParams({ ...searchParams, page: currentPage.toString() }).toString();
+
+            return (
+              <Link key={index} href={`/annonces?${url}`}>
+                <Button
+                  variant={page === currentPage ? 'default' : 'outline'}
+                  className="text-sm"
+                >
+                  {currentPage}
+                </Button>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

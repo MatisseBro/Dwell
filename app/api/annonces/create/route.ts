@@ -1,23 +1,21 @@
-'use server'
-
-import { redirect } from 'next/navigation'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { revalidatePath } from 'next/cache'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 
-export async function handleCreateAnnonce(formData: FormData) {
+export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session || !session.user) {
-      throw new Error('Non autorisé')
+    if (!session || session.user.role !== 'PROPRIETAIRE') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const title = formData.get('title') as string
-    const description = formData.get('description') as string
-    const ville = formData.get('ville') as string
+    const formData = await req.formData()
+    const title = formData.get('title')?.toString() || ''
+    const description = formData.get('description')?.toString() || ''
+    const ville = formData.get('ville')?.toString() || ''
     const price = parseFloat(formData.get('price') as string)
-    const type = formData.get('type') as string
+    const type = formData.get('type')?.toString() || ''
     const rooms = parseInt(formData.get('rooms') as string)
     const surface = parseInt(formData.get('surface') as string)
     const files = formData.getAll('images') as File[]
@@ -47,10 +45,9 @@ export async function handleCreateAnnonce(formData: FormData) {
       },
     })
 
-    revalidatePath('/annonces')
-    redirect('/annonces')
+    return NextResponse.json({ success: true })
   } catch (err) {
-    console.error('Erreur lors de la création d’annonce :', err)
-    throw err
+    console.error('Erreur API création annonce :', err)
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }

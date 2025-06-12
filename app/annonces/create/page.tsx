@@ -1,17 +1,35 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { redirect } from 'next/navigation';
-import { handleCreateAnnonce } from './actions';
+'use client'
 
-export default async function CreateAnnoncePage() {
-  const session = await getServerSession(authOptions);
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
-  if (!session) {
-    redirect('/connexion');
-  }
+export default function CreateAnnoncePage() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  if (session.user.role !== 'PROPRIETAIRE') {
-    redirect('/annonces');
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    const formData = new FormData(e.currentTarget)
+
+    try {
+      const res = await fetch('/api/annonces/create', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!res.ok) throw new Error('Échec de la création')
+
+      router.push('/annonces')
+    } catch (err) {
+      setError('Une erreur est survenue.')
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -21,44 +39,42 @@ export default async function CreateAnnoncePage() {
           Créer une annonce
         </h1>
 
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
         <form
-          action={handleCreateAnnonce}
+          onSubmit={handleSubmit}
           className="space-y-6 border border-[#ccc] rounded-xl p-6 shadow-md bg-transparent"
         >
-          {/* Titre */}
           <div>
             <label className="block text-sm font-medium text-[#1E1E1E] mb-1">Titre</label>
             <input
               name="title"
               type="text"
-              className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#1E1E1E] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733]"
               required
+              className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#1E1E1E] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733]"
             />
           </div>
 
-          {/* Description */}
           <div>
             <label className="block text-sm font-medium text-[#1E1E1E] mb-1">Description</label>
             <textarea
               name="description"
               rows={4}
-              className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#1E1E1E] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733]"
               required
+              className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#1E1E1E] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733]"
             />
           </div>
 
-          {/* Ville */}
           <div>
             <label className="block text-sm font-medium text-[#1E1E1E] mb-1">Ville</label>
             <input
               name="ville"
               type="text"
-              className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#1E1E1E] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733]"
               required
+              className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#1E1E1E] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733]"
             />
           </div>
 
-          {/* Grille */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-[#1E1E1E] mb-1">Prix (€)</label>
@@ -67,16 +83,16 @@ export default async function CreateAnnoncePage() {
                 type="number"
                 step="0.01"
                 min="0"
-                className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#1E1E1E] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733]"
                 required
+                className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#1E1E1E] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733]"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-[#1E1E1E] mb-1">Type</label>
               <select
                 name="type"
-                className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#405733] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733] appearance-none"
                 required
+                className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#405733] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733] appearance-none"
               >
                 <option className="bg-[#F9E7E7] text-[#405733]">Appartement</option>
                 <option className="bg-[#F9E7E7] text-[#405733]">Maison</option>
@@ -89,8 +105,8 @@ export default async function CreateAnnoncePage() {
                 name="rooms"
                 type="number"
                 min="1"
-                className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#1E1E1E] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733]"
                 required
+                className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#1E1E1E] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733]"
               />
             </div>
             <div>
@@ -99,13 +115,12 @@ export default async function CreateAnnoncePage() {
                 name="surface"
                 type="number"
                 min="1"
-                className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#1E1E1E] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733]"
                 required
+                className="w-full rounded-md border border-gray-300 px-4 py-2 text-[#1E1E1E] bg-transparent focus:outline-none focus:ring-2 focus:ring-[#405733]"
               />
             </div>
           </div>
 
-          {/* Images */}
           <div>
             <label className="block text-sm font-medium text-[#1E1E1E] mb-1">
               Photos (maximum 5)
@@ -119,17 +134,17 @@ export default async function CreateAnnoncePage() {
             />
           </div>
 
-          {/* Bouton */}
           <div className="text-center">
             <button
               type="submit"
+              disabled={loading}
               className="bg-[#405733] hover:bg-[#304624] text-white font-semibold px-6 py-2 rounded-md transition"
             >
-              Publier l&apos;annonce
+              {loading ? 'Publication…' : 'Publier l\'annonce'}
             </button>
           </div>
         </form>
       </div>
     </div>
-  );
+  )
 }

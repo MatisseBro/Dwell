@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -26,6 +26,8 @@ model User {
 }
 
 model Annonce {
+  @@map("annonce") // ← ceci garantit que Prisma utilise "annonce" en minuscule dans PostgreSQL
+
   id          Int      @id @default(autoincrement())
   title       String
   description String
@@ -40,6 +42,7 @@ model Annonce {
   authorId    Int
   likedBy     Like[]
 }
+
 
 model Like {
   id        Int      @id @default(autoincrement())
