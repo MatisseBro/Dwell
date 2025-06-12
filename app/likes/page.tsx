@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Heart } from 'lucide-react';
+import type { Annonce, Like } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,16 +21,22 @@ export default async function LikesPage() {
 
   const isProprietaire = session.user.role === 'PROPRIETAIRE';
 
-  const annonces = isProprietaire
-    ? await prisma.annonce.findMany({
-        where: { authorId: Number(session.user.id) },
-        orderBy: { createdAt: 'desc' },
-      })
-    : await prisma.like.findMany({
-        where: { userId: Number(session.user.id) },
-        include: { annonce: true },
-        orderBy: { createdAt: 'desc' },
-      });
+  let annonces: Annonce[] = [];
+
+  if (isProprietaire) {
+    annonces = await prisma.annonce.findMany({
+      where: { authorId: Number(session.user.id) },
+      orderBy: { createdAt: 'desc' },
+    });
+  } else {
+    const likes: (Like & { annonce: Annonce })[] = await prisma.like.findMany({
+      where: { userId: Number(session.user.id) },
+      include: { annonce: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    annonces = likes.map((like) => like.annonce);
+  }
 
   return (
     <div className="container mx-auto p-6" style={{ backgroundColor: '#F7E5E1' }}>
@@ -46,7 +53,7 @@ export default async function LikesPage() {
         </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {(isProprietaire ? annonces : annonces.map((like) => like.annonce)).map((ann) => (
+          {annonces.map((ann) => (
             <div
               key={ann.id}
               className="border border-[#171717] rounded-lg shadow hover:shadow-lg transition overflow-hidden flex flex-col justify-between"

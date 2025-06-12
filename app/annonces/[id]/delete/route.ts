@@ -1,21 +1,20 @@
 // app/annonces/[id]/delete/route.ts
+
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { getServerSession } from 'next-auth';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-type RouteContext = {
-  params: {
-    id: string;
-  };
-};
-
+// PAS de type custom ici. Typage direct en inline.
 export async function POST(
-  _req: NextRequest,
-  context: RouteContext
+  req: NextRequest,
+  context: { params: { id: string } }
 ) {
   const session = await getServerSession(authOptions);
+
+  if (!context.params?.id) {
+    return new NextResponse('Paramètre manquant', { status: 400 });
+  }
 
   const annonce = await prisma.annonce.findUnique({
     where: { id: Number(context.params.id) },
@@ -30,5 +29,5 @@ export async function POST(
     where: { id: Number(context.params.id) },
   });
 
-  return NextResponse.redirect(new URL('/annonces', _req.url));
+  return NextResponse.redirect(new URL('/annonces', req.url));
 }

@@ -15,15 +15,12 @@ export function HeroBackground() {
     if (!ctx) return;
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight * 0.8;
+      canvas!.width = window.innerWidth;
+      canvas!.height = window.innerHeight * 0.8;
     };
 
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-
-    const particlesArray: Particle[] = [];
-    const numberOfParticles = Math.min(60, Math.floor(window.innerWidth / 15));
 
     class Particle {
       x: number;
@@ -32,41 +29,47 @@ export function HeroBackground() {
       speedX: number;
       speedY: number;
       color: string;
+      canvas: HTMLCanvasElement;
+      ctx: CanvasRenderingContext2D;
 
-      constructor() {
+      constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+        this.canvas = canvas;
+        this.ctx = ctx;
+
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 5 + 2; // Slightly larger
+        this.size = Math.random() * 5 + 2;
         this.speedX = Math.random() * 1.5 - 0.75;
         this.speedY = Math.random() * 1.5 - 0.75;
         this.color =
           Math.random() > 0.5
-            ? 'rgba(197, 224, 197, 0.5)' // Greenish with more opacity
-            : 'rgba(248, 216, 168, 0.5)'; // Orangish
+            ? 'rgba(197, 224, 197, 0.5)'
+            : 'rgba(248, 216, 168, 0.5)';
       }
 
       update() {
         this.x += this.speedX;
         this.y += this.speedY;
 
-        // Bounce on edges instead of teleport
-        if (this.x <= 0 || this.x >= canvas.width) this.speedX *= -1;
-        if (this.y <= 0 || this.y >= canvas.height) this.speedY *= -1;
+        if (this.x <= 0 || this.x >= this.canvas.width) this.speedX *= -1;
+        if (this.y <= 0 || this.y >= this.canvas.height) this.speedY *= -1;
       }
 
       draw() {
-        if (!ctx) return;
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
+        this.ctx.fillStyle = this.color;
+        this.ctx.beginPath();
+        this.ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        this.ctx.fill();
       }
     }
+
+    const particlesArray: Particle[] = [];
+    const numberOfParticles = Math.min(60, Math.floor(window.innerWidth / 15));
 
     function init() {
       particlesArray.length = 0;
       for (let i = 0; i < numberOfParticles; i++) {
-        particlesArray.push(new Particle());
+        particlesArray.push(new Particle(canvas!, ctx!)); // ✅ FIX ICI
       }
     }
 
@@ -75,7 +78,6 @@ export function HeroBackground() {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Gradient background
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
       gradient.addColorStop(0, 'rgba(248, 216, 168, 0.15)');
       gradient.addColorStop(1, 'rgba(197, 224, 197, 0.15)');
@@ -86,7 +88,6 @@ export function HeroBackground() {
         particlesArray[i].update();
         particlesArray[i].draw();
 
-        // Draw lines between nearby particles
         for (let j = i + 1; j < particlesArray.length; j++) {
           const dx = particlesArray[i].x - particlesArray[j].x;
           const dy = particlesArray[i].y - particlesArray[j].y;
