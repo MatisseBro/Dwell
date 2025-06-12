@@ -51,7 +51,7 @@ export default function HomePage() {
       >
         <div className="space-y-2">
           <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-primary">
-            Trouvez votre <span className="text-accent">chez-vous</span> idéal
+            Trouvez votre <span className="text-accent">chez-vous</span> TEST
           </h1>
           <p className="max-w-[600px] text-muted-foreground md:text-xl">
             Dwell met en relation propriétaires et locataires pour une expérience de location simple, sécurisée et transparente.
