@@ -35,8 +35,21 @@ export function NavBar() {
       transition={{ duration: 0.5 }}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 ml-48 mt-5">
+        {/* Mobile Logo Centered */}
+        <div className="flex-1 flex justify-center md:hidden relative">
+          <Link href="/" className="flex items-center absolute -top-8">
+            <Image
+              src="/uploads/logo-dwell.png"
+              alt="Dwell Logo"
+              width={200}
+              height={80}
+              className="h-20 w-auto"
+            />
+          </Link>
+        </div>
+
+        {/* Desktop Logo */}
+        <Link href="/" className="hidden md:flex items-center gap-2 ml-48 mt-5">
           <Image
             src="/uploads/logo-dwell.png"
             alt="Dwell Logo"
@@ -110,7 +123,7 @@ export function NavBar() {
                     size="sm"
                     className="bg-white text-[#353535] hover:bg-gray-200"
                   >
-                    S&apos;inscrire
+                    S'inscrire
                   </Button>
                 </Link>
               </>
@@ -130,17 +143,6 @@ export function NavBar() {
               </SheetHeader>
 
               <div className="flex flex-col h-full">
-                <div className="flex items-center justify-between py-4">
-                  <Link href="/" className="flex items-center gap-2 ml-6 mt-3">
-                    <Image
-                      src="/uploads/logo-dwell.png"
-                      alt="Dwell Logo"
-                      width={240}
-                      height={80}
-                      className="h-20 w-auto"
-                    />
-                  </Link>
-                </div>
                 <nav className="flex flex-col divide-y divide-white/20">
                   <Link href="/annonces" className="text-lg font-medium hover:text-[#405733] transition-colors py-4">
                     Annonces
@@ -197,7 +199,7 @@ export function NavBar() {
                       </Link>
                       <Link href="/inscription">
                         <Button className="w-full bg-white text-[#353535] hover:bg-gray-200">
-                          S&apos;inscrire
+                          S'inscrire
                         </Button>
                       </Link>
                     </>
