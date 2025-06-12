@@ -1,10 +1,26 @@
-import NextAuth, { NextAuthOptions } from 'next-auth';
+import NextAuth, { NextAuthOptions, Session, User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { JWT } from 'next-auth/jwt';
 
 const prisma = new PrismaClient();
+
+type CustomUser = {
+  id: number;
+  email: string;
+  role: Role;
+  nom: string;
+  prenom: string;
+};
+
+type CustomToken = JWT & {
+  id?: number;
+  email?: string;
+  role?: Role;
+  nom?: string;
+  prenom?: string;
+};
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -17,7 +33,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'text' },
         password: { label: 'Mot de passe', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<CustomUser | null> {
         if (!credentials?.email || !credentials?.password) return null;
 
         const user = await prisma.user.findUnique({
@@ -35,28 +51,28 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           nom: user.nom,
           prenom: user.prenom,
-        } as any;
+        };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }): Promise<CustomToken> {
       if (user) {
-        token.id = (user as any).id;
+        token.id = (user as CustomUser).id;
         token.email = user.email;
-        token.role = (user as any).role;
-        token.nom = (user as any).nom;
-        token.prenom = (user as any).prenom;
+        token.role = (user as CustomUser).role;
+        token.nom = (user as CustomUser).nom;
+        token.prenom = (user as CustomUser).prenom;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }): Promise<Session> {
       if (session.user && token) {
-        session.user.id = (token as any).id;
-        session.user.email = token.email as string;
-        session.user.role = (token as any).role;
-        session.user.nom = (token as any).nom;
-        session.user.prenom = (token as any).prenom;
+        session.user.id = (token as CustomToken).id!;
+        session.user.email = token.email!;
+        session.user.role = (token as CustomToken).role!;
+        session.user.nom = (token as CustomToken).nom!;
+        session.user.prenom = (token as CustomToken).prenom!;
       }
       return session;
     },

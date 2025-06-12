@@ -1,11 +1,20 @@
+// next.config.ts
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   experimental: {
-    appDir: true,         // active l’App Router
-    serverActions: true,  // active la directive 'use server'
+    serverActions: {}, // ✅ Active les server actions
   },
-  // … vos autres options ici
+  // Ajoute d'autres options ici si nécessaire
+  images: {
+    domains: ['localhost', 'your-domain.com'], // remplace par tes domaines d'images si besoin
+  },
+  typescript: {
+    ignoreBuildErrors: false, // 🛑 Garde à false pour éviter les erreurs non traitées
+  },
+  eslint: {
+    ignoreDuringBuilds: false, // 🛑 Garde à false pour corriger les erreurs ESLint avant le build
+  },
 };
 
 export default nextConfig;

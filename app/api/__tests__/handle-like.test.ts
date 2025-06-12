@@ -1,51 +1,72 @@
-// __tests__/handle-like.test.ts
-import { handleLike } from '@/lib/handle-like';
-import { getSessionSafe } from '@/lib/get-session';
-import { prisma } from '@/lib/prisma';
+import NextAuth, { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+import { JWT } from 'next-auth/jwt';
 
-// ✅ Patch Response pour Jest sans node-fetch
-global.Response = class {
-  body: string;
-  status: number;
-  headers?: HeadersInit;
+const prisma = new PrismaClient();
 
-  constructor(body: string, init?: { status?: number; headers?: HeadersInit }) {
-    this.body = body;
-    this.status = init?.status ?? 200;
-    this.headers = init?.headers;
-  }
-} as any;
+export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: 'jwt',
+  },
+  providers: [
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Mot de passe', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
 
-jest.mock('@/lib/get-session', () => ({
-  getSessionSafe: jest.fn(),
-}));
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
 
-jest.mock('@/lib/prisma', () => ({
-  prisma: {
-    like: {
-      create: jest.fn(),
+        if (!user) return null;
+
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) return null;
+
+        return {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          nom: user.nom,
+          prenom: user.prenom,
+        } as any;
+      },
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = (user as any).id;
+        token.email = user.email;
+        token.role = (user as any).role;
+        token.nom = (user as any).nom;
+        token.prenom = (user as any).prenom;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user && token) {
+        session.user.id = (token as any).id;
+        session.user.email = token.email as string;
+        session.user.role = (token as any).role;
+        session.user.nom = (token as any).nom;
+        session.user.prenom = (token as any).prenom;
+      }
+      return session;
     },
   },
-}));
+  pages: {
+    signIn: '/connexion',
+    error: '/',
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+};
 
-const mockedGetSession = getSessionSafe as jest.Mock;
-const mockedCreate = prisma.like.create as jest.Mock;
-
-describe('handleLike', () => {
-  it('renvoie 401 si pas connecté', async () => {
-    mockedGetSession.mockResolvedValue(null);
-    const res = await handleLike('1');
-    expect(res.status).toBe(401);
-  });
-
-  it('crée un like et retourne 200 si connecté', async () => {
-    mockedGetSession.mockResolvedValue({ user: { id: 1 } });
-    mockedCreate.mockResolvedValue({});
-
-    const res = await handleLike('1');
-    expect(mockedCreate).toHaveBeenCalledWith({
-      data: { userId: 1, annonceId: 1 },
-    });
-    expect(res.status).toBe(200);
-  });
-});
+export const GET = NextAuth(authOptions);
+export const POST = NextAuth(authOptions);
