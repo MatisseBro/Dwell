@@ -92,7 +92,7 @@ export default function HomePage() {
           </TabsContent>
           <TabsContent value="proprietaire" className="p-4 border rounded-lg mt-2 bg-white/80 backdrop-blur-sm min-h-[300px] flex flex-col justify-center text-center space-y-4">
             <p className="text-sm text-muted-foreground">
-              Vous êtes propriétaire et vous voulez publier une annonce ? C'est ici !
+              Vous êtes propriétaire et vous voulez publier une annonce ? C&apos;est ici !
             </p>
             <PublishAnnonceButton/>
           </TabsContent>
@@ -174,12 +174,12 @@ export default function HomePage() {
           <div className="container px-4 md:px-6 text-center space-y-4">
             <h2 className="text-4xl md:text-5xl font-bold">Prêt à commencer ?</h2>
             <p className="max-w-[900px] mx-auto text-lg md:text-xl">
-              Rejoignez notre communauté et trouvez votre logement idéal ou votre locataire parfait dès aujourd'hui.
+              Rejoignez notre communauté et trouvez votre logement idéal ou votre locataire parfait dès aujourd&apos;hui.
             </p>
             <div className="flex justify-center gap-4">
               <Link href="/inscription">
                 <Button size="lg" className="gap-1 bg-[#353535] text-white hover:bg-[#2c2c2c] border border-transparent">
-                  S'inscrire gratuitement <ArrowRight className="h-4 w-4" />
+                  S&apos;inscrire gratuitement <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
               <Link href="/inscription/en-savoir-plus">

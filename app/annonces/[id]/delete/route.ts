@@ -2,23 +2,33 @@
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { getServerSession } from 'next-auth';
-import { redirect } from 'next/navigation';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+type RouteContext = {
+  params: {
+    id: string;
+  };
+};
+
+export async function POST(
+  _req: NextRequest,
+  context: RouteContext
+) {
   const session = await getServerSession(authOptions);
 
   const annonce = await prisma.annonce.findUnique({
-    where: { id: Number(params.id) },
+    where: { id: Number(context.params.id) },
     include: { author: true },
   });
 
-  if (!session || session.user.email !== annonce?.author.email) {
-    return new Response('Non autorisé', { status: 403 });
+  if (!session?.user?.email || annonce?.author.email !== session.user.email) {
+    return new NextResponse('Non autorisé', { status: 403 });
   }
 
   await prisma.annonce.delete({
-    where: { id: Number(params.id) },
+    where: { id: Number(context.params.id) },
   });
 
-  redirect('/annonces');
+  return NextResponse.redirect(new URL('/annonces', _req.url));
 }

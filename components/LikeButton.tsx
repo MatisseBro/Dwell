@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react'; // ⬅️ Supprimé useEffect
 import { Heart } from 'lucide-react';
 
 export default function LikeButton({ annonceId, initialLiked }: { annonceId: number; initialLiked: boolean }) {

@@ -6,21 +6,21 @@ export default function ConditionsUtilisation() {
     >
       <div className="max-w-3xl mx-auto text-black">
         <h1 className="text-3xl font-bold mb-6 text-primary">
-          Conditions d'utilisation
+          Conditions d&apos;utilisation
         </h1>
 
         <h2 className="text-xl font-semibold mt-6 mb-2 text-primary">
           Acceptation des conditions
         </h2>
         <p className="mb-4">
-          En accédant et en utilisant le site Dwell, vous acceptez les présentes conditions d'utilisation. Si vous n’êtes pas d’accord, veuillez ne pas utiliser nos services.
+          En accédant et en utilisant le site Dwell, vous acceptez les présentes conditions d&apos;utilisation. Si vous n&apos;êtes pas d&apos;accord, veuillez ne pas utiliser nos services.
         </p>
 
         <h2 className="text-xl font-semibold mt-6 mb-2 text-primary">
           Utilisation du site
         </h2>
         <p className="mb-4">
-          L'utilisateur s'engage à ne pas utiliser le site à des fins illégales, nuisibles ou interdites par les présentes conditions. Toute tentative de perturber le fonctionnement de la plateforme est interdite.
+          L&apos;utilisateur s&apos;engage à ne pas utiliser le site à des fins illégales, nuisibles ou interdites par les présentes conditions. Toute tentative de perturber le fonctionnement de la plateforme est interdite.
         </p>
 
         <h2 className="text-xl font-semibold mt-6 mb-2 text-primary">

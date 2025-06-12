@@ -1,26 +1,11 @@
-import NextAuth, { NextAuthOptions, Session, User } from 'next-auth';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient, User as PrismaUser } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { JWT } from 'next-auth/jwt';
 
 const prisma = new PrismaClient();
 
-type CustomUser = {
-  id: number;
-  email: string;
-  role: Role;
-  nom: string;
-  prenom: string;
-};
-
-type CustomToken = JWT & {
-  id?: number;
-  email?: string;
-  role?: Role;
-  nom?: string;
-  prenom?: string;
-};
+type CustomUser = Pick<PrismaUser, 'id' | 'email' | 'role' | 'nom' | 'prenom'>;
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -45,34 +30,30 @@ export const authOptions: NextAuthOptions = {
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) return null;
 
-        return {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          nom: user.nom,
-          prenom: user.prenom,
-        };
+        const { id, email, role, nom, prenom } = user;
+        return { id, email, role, nom, prenom };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }): Promise<CustomToken> {
-      if (user) {
-        token.id = (user as CustomUser).id;
-        token.email = user.email;
-        token.role = (user as CustomUser).role;
-        token.nom = (user as CustomUser).nom;
-        token.prenom = (user as CustomUser).prenom;
+    async jwt({ token, user }) {
+      if (user && typeof user === 'object') {
+        const u = user as CustomUser;
+        token.id = u.id;
+        token.email = u.email;
+        token.nom = u.nom;
+        token.prenom = u.prenom;
+        token.role = u.role;
       }
       return token;
     },
-    async session({ session, token }): Promise<Session> {
-      if (session.user && token) {
-        session.user.id = (token as CustomToken).id!;
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as number;
         session.user.email = token.email!;
-        session.user.role = (token as CustomToken).role!;
-        session.user.nom = (token as CustomToken).nom!;
-        session.user.prenom = (token as CustomToken).prenom!;
+        session.user.nom = token.nom!;
+        session.user.prenom = token.prenom!;
+        session.user.role = token.role!;
       }
       return session;
     },

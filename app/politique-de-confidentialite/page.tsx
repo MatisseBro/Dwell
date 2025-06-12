@@ -15,7 +15,7 @@ export default function PolitiqueDeConfidentialite() {
 
         <h2 className="text-xl font-semibold mt-6 mb-2 text-primary">1. Données collectées</h2>
         <p className="mb-4">
-          Nous collectons les informations suivantes lors de votre inscription ou de l’utilisation de la plateforme :
+          Nous collectons les informations suivantes lors de votre inscription ou de l&rsquo;utilisation de la plateforme :
         </p>
         <ul className="list-disc pl-6 mb-4">
           <li>Nom, prénom, adresse e-mail, numéro de téléphone</li>
@@ -28,7 +28,7 @@ export default function PolitiqueDeConfidentialite() {
           Vos données sont utilisées pour :
         </p>
         <ul className="list-disc pl-6 mb-4">
-          <li>Vous permettre d'accéder à votre compte</li>
+          <li>Vous permettre d&rsquo;accéder à votre compte</li>
           <li>Publier et consulter des annonces</li>
           <li>Gérer les interactions entre utilisateurs (likes, messages)</li>
           <li>Améliorer les services de la plateforme</li>
@@ -45,12 +45,12 @@ export default function PolitiqueDeConfidentialite() {
 
         <h2 className="text-xl font-semibold mt-6 mb-2 text-primary">4. Durée de conservation</h2>
         <p className="mb-4">
-          Les données sont conservées pendant la durée de l’utilisation de votre compte, puis archivées ou supprimées après résiliation.
+          Les données sont conservées pendant la durée de l&rsquo;utilisation de votre compte, puis archivées ou supprimées après résiliation.
         </p>
 
         <h2 className="text-xl font-semibold mt-6 mb-2 text-primary">5. Vos droits</h2>
         <p className="mb-4">
-          Conformément au RGPD, vous disposez d’un droit d’accès, de modification, de suppression et de portabilité de vos données. Contactez-nous à <strong>contact@dwell.fr</strong> pour toute demande.
+          Conformément au RGPD, vous disposez d&rsquo;un droit d&rsquo;accès, de modification, de suppression et de portabilité de vos données. Contactez-nous à <strong>contact@dwell.fr</strong> pour toute demande.
         </p>
 
         <h2 className="text-xl font-semibold mt-6 mb-2 text-primary">6. Sécurité</h2>

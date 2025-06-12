@@ -68,7 +68,7 @@ export default function EditForm({ annonce }: { annonce: AnnonceProps }) {
     <div className="min-h-screen py-12 px-6" style={{ backgroundColor: '#F9E7E7' }}>
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-[#3D3D3D] mb-6 text-center">
-          Modifier l'annonce
+          Modifier l&apos;annonce
         </h1>
 
         <form
