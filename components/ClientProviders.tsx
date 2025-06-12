@@ -11,21 +11,21 @@ interface Props {
 export default function ClientProviders({ children }: Props) {
   const [mounted, setMounted] = useState(false);
 
-  // Empêche les conflits de thème et les erreurs d'hydratation
+  // Empêche les erreurs d'hydratation liées au thème
   useEffect(() => {
     setMounted(true);
   }, []);
 
   if (!mounted) {
-    return <div className="w-full h-screen bg-white" />; // Optionnel : spinner/squelette ici
+    return <div className="w-full h-screen bg-black" />; // Splash en dark
   }
 
   return (
     <SessionProvider>
       <NextThemesProvider
         attribute="class"
-        defaultTheme="light"
-        enableSystem
+        defaultTheme="dark"       // ✅ Thème sombre par défaut
+        enableSystem={false}      // ✅ Ne pas suivre le thème système
         disableTransitionOnChange
       >
         {children}
