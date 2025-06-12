@@ -37,7 +37,7 @@ export function NavBar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         {/* Mobile Logo Centered */}
         <div className="flex-1 flex justify-center md:hidden relative">
-          <Link href="/" className="flex items-center absolute -top-8">
+          <Link href="/" className="flex items-center absolute -top-6">
             <Image
               src="/uploads/logo-dwell.png"
               alt="Dwell Logo"
@@ -105,7 +105,7 @@ export function NavBar() {
                 className="bg-red-500 text-white hover:bg-red-600"
                 onClick={() => signOut({ callbackUrl: '/' })}
               >
-                Se déconnecter
+                Se d&eacute;connecter
               </Button>
             ) : (
               <>
@@ -123,7 +123,7 @@ export function NavBar() {
                     size="sm"
                     className="bg-white text-[#353535] hover:bg-gray-200"
                   >
-                    S'inscrire
+                    S&apos;inscrire
                   </Button>
                 </Link>
               </>
@@ -148,13 +148,13 @@ export function NavBar() {
                     Annonces
                   </Link>
                   <Link href="/#fonctionnalites" className="text-lg font-medium hover:text-[#405733] transition-colors py-4">
-                    Fonctionnalités
+                    Fonctionnalit&eacute;s
                   </Link>
                   <Link href="/#comment-ca-marche" className="text-lg font-medium hover:text-[#405733] transition-colors py-4">
-                    Comment ça marche
+                    Comment &ccedil;a marche
                   </Link>
                   <Link href="/#temoignages" className="text-lg font-medium hover:text-[#405733] transition-colors py-4">
-                    Témoignages
+                    T&eacute;moignages
                   </Link>
                   <Link href="/#faq" className="text-lg font-medium hover:text-[#405733] transition-colors py-4">
                     FAQ
@@ -163,7 +163,7 @@ export function NavBar() {
                     <>
                       <Link href="/likes" className="flex items-center gap-2 text-lg font-medium hover:text-red-500 transition-colors py-4">
                         <Heart className="w-5 h-5" />
-                        Annonces Likées
+                        Annonces Lik&eacute;es
                       </Link>
                       <Link href="/messages" className="flex items-center gap-2 text-lg font-medium hover:text-blue-500 transition-colors py-4">
                         <Mail className="w-5 h-5" />
@@ -188,7 +188,7 @@ export function NavBar() {
                       className="w-full bg-red-500 text-white hover:bg-red-600"
                       onClick={() => signOut({ callbackUrl: '/' })}
                     >
-                      Se déconnecter
+                      Se d&eacute;connecter
                     </Button>
                   ) : (
                     <>
@@ -199,7 +199,7 @@ export function NavBar() {
                       </Link>
                       <Link href="/inscription">
                         <Button className="w-full bg-white text-[#353535] hover:bg-gray-200">
-                          S'inscrire
+                          S&apos;inscrire
                         </Button>
                       </Link>
                     </>
